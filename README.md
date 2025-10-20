@@ -1,16 +1,27 @@
-# postgres-logstash
-## Introduction
+# PostgreSQL Log Analysis Pipeline
 
-This project automates the collection and processing of **PostgreSQL logs** using **Logstash**.  
-It parses both **connection** and **audit** logs, enriches them with host metadata, and stores the results in a **PostgreSQL / TimescaleDB** database for analysis and monitoring.
+## 1. Project Description
 
-### What It Does
+This project provides a host-based pipeline for collecting and analyzing **PostgreSQL logs** using **Logstash**.  
+It focuses on parsing **connection** and **audit** events, enriching them with system metadata, and storing them in a **PostgreSQL / TimescaleDB** database for structured analysis.  
 
-- Collects PostgreSQL log files directly from the host system.  
-- Parses connection and audit events using **Grok** patterns.  
-- Adds metadata such as `cluster_name`, `server_name`, and `server_ip` via a Ruby filter.  
-- Writes structured log data into a PostgreSQL database using the **JDBC output plugin**.  
-- Supports continuous file tracking with **sincedb** for real-time updates.  
-- Can run either on the host or inside a **Docker container**.  
-- Includes an optional **Bash script** for pipeline automation and restarts.  
-- Designed and tested on **Rocky Linux 9**.
+The system runs directly on **Rocky Linux 9** and is designed for production environments where logs are processed in real-time without containerization.
+
+### Key Features
+- Reads PostgreSQL log files directly from `/var/log/postgresql/`
+- Extracts structured data using **Grok** filters  
+- Adds environment metadata (`cluster_name`, `server_name`, `server_ip`) via **Ruby filter**  
+- Stores parsed data in PostgreSQL using **JDBC output**  
+- Tracks file read state with **sincedb** for continuous updates  
+- Includes optional **Bash scripts** for pipeline automation and restarts  
+
+---
+
+## 2. Installation
+
+### Step 1 – Install PostgreSQL
+
+```bash
+sudo dnf install postgresql17-server postgresql17-contrib -y
+sudo /usr/pgsql-17/bin/postgresql-17-setup initdb
+sudo systemctl enable --now postgresql-17
