@@ -1,12 +1,12 @@
 ## Introduction
 
-This repository delivers a host-based pipeline for collecting and analyzing **PostgreSQL logs** with **Logstash**.  
-It parses **connection** and **audit** events, enriches them with host metadata (`cluster_name`, `server_name`, `server_ip`), and stores structured records in **PostgreSQL / TimescaleDB** for querying and monitoring.  
-The setup targets **Rocky Linux 9** and assumes direct installation on the host.
+- This repository delivers a host-based pipeline for collecting and analyzing **PostgreSQL logs** with **Logstash**.  
+- It parses **connection** and **audit** events, enriches them with host metadata (`cluster_name`, `server_name`, `server_ip`), and stores structured records in **PostgreSQL / TimescaleDB** for querying and monitoring.  
+- The setup targets **Rocky Linux 9** and assumes direct installation on the host.
 
 ---
-
-## Step 1 — Install PostgreSQL (Rocky Linux)
+## Installation
+### Step 1 — Install PostgreSQL (Rocky Linux)
 
 ```bash
 # 1) Install PostgreSQL server + contrib packages
@@ -22,9 +22,9 @@ sudo systemctl enable --now postgresql-17
 systemctl --no-pager status postgresql-17
 psql --version  # verify client installed (optional)
 ```
-## Step 2 — Configure Logging and pgaudit
-> Goal: Enable detailed connection and audit logging in PostgreSQL by adjusting key parameters in `postgresql.conf`.  
-> This step ensures that both standard activity logs and audit trails are captured for Logstash.
+### Step 2 — Configure Logging and pgaudit
+Goal: Enable detailed connection and audit logging in PostgreSQL by adjusting key parameters in `postgresql.conf`.  
+- This step ensures that both standard activity logs and audit trails are captured for Logstash.
 ---
 ### Edit PostgreSQL Configuration
 
@@ -34,7 +34,6 @@ Open the main configuration file:
 # Open postgresql.conf inside the data directory
 sudo vi /var/lib/pgsql/17/data/postgresql.conf
 ```
-Apply the Following Changes
 Below are the recommended settings for comprehensive logging and auditing.
 ```bash
 # Activate the built-in logging collector
@@ -75,12 +74,25 @@ pgaudit.log = 'all'
 pgaudit.log_catalog = off
 ```
 
-## Step 3 — Install and Configure Logstash
-
-> Goal: Install Logstash on the host system, enable it as a service, and prepare the directory structure for pipeline configuration.
+### Step 3 — Install and Configure Logstash
+Goal: Install Logstash on the host system, enable it as a service, and prepare the directory structure for pipeline configuration.
 
 ---
-
+> ⚠️ **Permission Warning**
+>
+> Make sure the user running **Logstash** has:
+> - **Read access** to PostgreSQL log files under `/var/lib/pgsql/17/data/log/`
+> - **Write access** to the target PostgreSQL database  
+>
+> If permission errors occur during parsing or JDBC output,  
+> temporarily run Logstash with **root privileges**:
+>
+> ```bash
+> sudo systemctl restart logstash
+> ```
+>
+> This ensures the service can both read log files and insert records into database tables.
+---
 ### Install Logstash
 
 Add Elastic’s official repository and install Logstash:
@@ -105,3 +117,51 @@ sudo dnf install logstash -y
 
 # Enable Logstash to start automatically at boot
 sudo systemctl enable logstash
+```
+### Step 3.1 — Install PostgreSQL JDBC Driver
+
+Goal: Allow Logstash to connect to PostgreSQL using the JDBC output plugin.
+
+Logstash requires a PostgreSQL JDBC driver (`.jar`) file to write data into the database.  
+Follow these steps to install it manually.
+
+```bash
+# Navigate to the Logstash JDBC library directory
+cd /usr/share/logstash/vendor/jar/jdbc/
+
+# Download the official PostgreSQL JDBC driver
+sudo wget https://jdbc.postgresql.org/download/postgresql-42.7.8.jar
+
+# Verify the file is present
+ls -l postgresql-*.jar
+```
+> The version number (e.g., 42.7.8) may change depending on the latest release.
+> You can find the most recent version at:
+> https://jdbc.postgresql.org/download/
+
+## Usage
+
+> After completing the installation and configuration steps,  
+> you can start the entire pipeline using the provided shell script  
+> or run it manually through Logstash.
+
+---
+
+### Run with the Shell Script (Recommended)
+
+The easiest way to start and maintain the pipeline is by using the **`run_pipeline.sh`** script.  
+This script automatically performs all necessary setup tasks.
+
+```bash
+cd scripts/
+sudo bash run_pipeline.sh
+```
+> 💡 **Note**
+>
+> If you experience any issues, open the example configuration file  
+> provided in this repository and update it according to your environment.
+>
+> The file can be found under:
+> ```
+> /etc/logstash/conf.d/main.conf
+> ```
