@@ -1,27 +1,23 @@
-# PostgreSQL Log Analysis Pipeline
+## Introduction
 
-## 1. Project Description
-
-This project provides a host-based pipeline for collecting and analyzing **PostgreSQL logs** using **Logstash**.  
-It focuses on parsing **connection** and **audit** events, enriching them with system metadata, and storing them in a **PostgreSQL / TimescaleDB** database for structured analysis.  
-
-The system runs directly on **Rocky Linux 9** and is designed for production environments where logs are processed in real-time without containerization.
-
-### Key Features
-- Reads PostgreSQL log files directly from `/var/log/postgresql/`
-- Extracts structured data using **Grok** filters  
-- Adds environment metadata (`cluster_name`, `server_name`, `server_ip`) via **Ruby filter**  
-- Stores parsed data in PostgreSQL using **JDBC output**  
-- Tracks file read state with **sincedb** for continuous updates  
-- Includes optional **Bash scripts** for pipeline automation and restarts  
+This repository delivers a host-based pipeline for collecting and analyzing **PostgreSQL logs** with **Logstash**.  
+It parses **connection** and **audit** events, enriches them with host metadata (`cluster_name`, `server_name`, `server_ip`), and stores structured records in **PostgreSQL / TimescaleDB** for querying and monitoring.  
+The setup targets **Rocky Linux 9** and assumes direct installation on the host.
 
 ---
 
-## 2. Installation
-
-### Step 1 – Install PostgreSQL
+## Step 1 — Install PostgreSQL (Rocky Linux)
 
 ```bash
+# 1) Install PostgreSQL server + contrib packages
 sudo dnf install postgresql17-server postgresql17-contrib -y
+
+# 2) Initialize the database cluster (creates data dir, default configs)
 sudo /usr/pgsql-17/bin/postgresql-17-setup initdb
+
+# 3) Enable and start the service on boot
 sudo systemctl enable --now postgresql-17
+
+# 4) Quick health check
+systemctl --no-pager status postgresql-17
+psql --version  # verify client installed (optional)
