@@ -149,12 +149,12 @@ ls -l postgresql-*.jar
 
 ### Run with the Shell Script (Recommended)
 
-The easiest way to start and maintain the pipeline is by using the **`run_pipeline.sh`** script.  
+The easiest way to start and maintain the pipeline is by using the **`setup-logstash.sh`** script.  
 This script automatically performs all necessary setup tasks.
 
 ```bash
 cd scripts/
-sudo bash run_pipeline.sh
+sudo bash setup-logstash.sh
 ```
 > 💡 **Note**
 >
