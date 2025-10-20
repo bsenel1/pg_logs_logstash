@@ -34,6 +34,8 @@ Open the main configuration file:
 # Open postgresql.conf inside the data directory
 sudo vi /var/lib/pgsql/17/data/postgresql.conf
 ```
+Apply the Following Changes
+Below are the recommended settings for comprehensive logging and auditing.
 ```bash
 # Activate the built-in logging collector
 logging_collector = on
