@@ -278,8 +278,31 @@ echo ""
 log_info "? Database setup completed"
 echo ""
 
+log_step "Step 5: Enabling TimescaleDB extension..."
+psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_ADMIN_USER" -d "$PG_DATABASE" > /dev/null 2>&1 <<EOF
+CREATE EXTENSION IF NOT EXISTS timescaledb;
+EOF
+
+if [ $? -eq 0 ]; then
+    log_info "✓ TimescaleDB extension enabled successfully"
+else
+    log_warn "TimescaleDB extension could not be enabled. Please verify shared_preload_libraries includes 'timescaledb'"
+fi
+
+log_step "Step 6: Converting tables to hypertables..."
+psql -h "$PG_HOST" -p "$PG_PORT" -U "$PG_ADMIN_USER" -d "$PG_DATABASE" > /dev/null 2>&1 <<EOF
+SELECT create_hypertable('connection_logs', 'log_time', if_not_exists => TRUE);
+SELECT create_hypertable('audit_logs', 'log_time', if_not_exists => TRUE);
+EOF
+
+if [ $? -eq 0 ]; then
+    log_info "✓ Tables successfully converted to hypertables"
+else
+    log_warn "Hypertable conversion skipped or failed (TimescaleDB may not be active)"
+fi
+
 # Download JDBC driver if not exists
-log_step "Step 5: Checking JDBC driver..."
+log_step "Step 7: Checking JDBC driver..."
 if [ ! -f "$JDBC_JAR" ]; then
     log_info "Downloading PostgreSQL JDBC driver..."
     JDBC_DIR=$(dirname "$JDBC_JAR")
@@ -292,7 +315,7 @@ fi
 echo ""
 
 # Create Logstash configuration
-log_step "Step 6: Creating Logstash configuration..."
+log_step "Step 8: Creating Logstash configuration..."
 
 # Create config directory if not exists
 mkdir -p "$(dirname "$CONFIG_PATH")"
@@ -523,7 +546,7 @@ log_info "? Logstash configuration created: $CONFIG_PATH"
 echo ""
 
 # Create sincedb directory if not exists
-log_step "Step 7: Setting up sincedb directory..."
+log_step "Step 9: Setting up sincedb directory..."
 SINCEDB_DIR=$(dirname "$SINCEDB_PATH")
 if [ ! -d "$SINCEDB_DIR" ]; then
     log_info "Creating sincedb directory: $SINCEDB_DIR"
@@ -540,7 +563,7 @@ fi
 echo ""
 
 # Test Logstash configuration
-log_step "Step 8: Testing Logstash configuration..."
+log_step "Step 10: Testing Logstash configuration..."
 if /usr/share/logstash/bin/logstash -t -f "$CONFIG_PATH" > /tmp/logstash-test.log 2>&1; then
     log_info "? Logstash configuration test passed"
 else
@@ -551,7 +574,7 @@ fi
 echo ""
 
 # Restart Logstash
-log_step "Step 9: Restarting Logstash service..."
+log_step "Step 11: Restarting Logstash service..."
 if systemctl is-active --quiet logstash; then
     systemctl restart logstash
     log_info "? Logstash service restarted"
