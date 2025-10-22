@@ -240,5 +240,5 @@ along with their possible causes and recommended solutions.
 ## 🐳 Docker Support
 
 If you prefer to run this setup inside a containerized environment,  
-see [DOCKER_SETUP.md](DOCKER_SETUP.md) for Docker Compose examples  
+see [Docker README (docker branch)](https://github.com/bsenel1/postgres-logstash/blob/docker/README.md) for Docker Compose examples  
 and container-based Logstash + PostgreSQL configuration.
