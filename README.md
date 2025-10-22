@@ -57,10 +57,6 @@ log_statement = 'all'
 # Include useful metadata in each log line
 log_line_prefix = '%m [%p] user=%u,db=%d, client_ip=%h app=%a'
 
-# Rotate log files daily or when they exceed 10MB
-log_rotation_age = 1d
-log_rotation_size = 10MB
-
 # Do not truncate old logs on rotation (keep history)
 log_truncate_on_rotation = off
 
@@ -163,5 +159,5 @@ sudo bash setup-logstash.sh
 >
 > The file can be found under:
 > ```
-> /etc/logstash/conf.d/main.conf
+> /etc/logstash/conf.d/logstash.conf
 > ```
