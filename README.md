@@ -214,3 +214,10 @@ along with their possible causes and recommended solutions.
 > sudo tail -f /var/log/logstash/logstash-plain.log
 > ```  
 > and review `/tmp/logstash-test.log` if a configuration test fails.
+---
+
+## 🐳 Docker Support
+
+If you prefer to run this setup inside a containerized environment,  
+see [DOCKER_SETUP.md](DOCKER_SETUP.md) for Docker Compose examples  
+and container-based Logstash + PostgreSQL configuration.
