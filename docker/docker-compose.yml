@@ -1,1 +1,28 @@
+version: "3.9"
 
+services:
+  logstash:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pg_logstash
+    user: root
+    restart: always
+
+    volumes:
+      - ./config/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./config/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+      - ./driver/postgresql-42.7.8.jar:/usr/share/logstash/logstash-core/lib/jars/postgresql-42.7.8.jar:ro
+      - /var/lib/pgsql/17/data/log/:/var/lib/pgsql/17/data/log/:ro
+      - ./sincedb:/var/lib/logstash
+
+    environment:
+      - PIPELINE_ID=main
+      - PIPELINE_WORKERS=2
+      - CLUSTER_NAME=demo_cluster
+      - SERVER_NAME=pg-audit-node-01
+      # Optional: - SERVER_IP=192.168.1.100
+
+    ports:
+      - "9600:9600"
