@@ -161,3 +161,56 @@ sudo bash setup-logstash.sh
 > ```
 > /etc/logstash/conf.d/logstash.conf
 > ```
+---
+## Verification
+
+After running the setup script, verify that the pipeline is correctly configured and Logstash is actively sending data to PostgreSQL.
+
+### Check Logstash Service Status
+Ensure Logstash is running properly:
+```bash
+sudo systemctl status logstash --no-pager
+```
+If the service is active, you should see:
+> Active: active (running)
+
+### Validate Logstash Configuration
+Manually test the configuration file to confirm there are no syntax errors:
+```bash
+sudo /usr/share/logstash/bin/logstash -t -f /etc/logstash/conf.d/logstash.conf
+```
+If successful, the output will include:
+> Configuration OK
+
+### Verify Database Tables
+
+Run the following commands to confirm that new data is being inserted into the target tables:
+```bash
+# Check latest connection logs
+psql -h <host> -p <port> -U <admin_user> -d <database> \
+     -c "SELECT log_time, username, client_ip, action FROM connection_logs ORDER BY log_time DESC LIMIT 10;"
+
+# Check latest audit logs
+psql -h <host> -p <port> -U <admin_user> -d <database> \
+     -c "SELECT log_time, username, audit_type, command, application_name FROM audit_logs ORDER BY log_time DESC LIMIT 10;"
+```
+If both queries return rows, the setup is complete and operational.
+
+## Troubleshooting
+---
+Below are some common issues you may encounter during setup or runtime,
+along with their possible causes and recommended solutions.
+
+| **Issue** | **Possible Cause** | **Solution** |
+|------------|--------------------|---------------|
+| **Logstash pipeline failed to start** | Configuration syntax error in the `.conf` file | Run:<br>`sudo /usr/share/logstash/bin/logstash -t -f /etc/logstash/conf.d/main.conf`<br>to validate and locate the issue. |
+| **No data written to PostgreSQL tables** | Incorrect credentials or database permissions | Check the JDBC section in your config:<br>`username`, `password`, and `connection_string` must match your PostgreSQL setup. |
+| **Permission denied errors** | Insufficient access to Logstash directories | Fix permissions:<br>`sudo chown -R logstash:logstash /var/lib/logstash /etc/logstash` |
+| **psql: connection refused** | Wrong host, port, or PostgreSQL service not running | Test connection manually:<br>`psql -h <host> -p <port> -U <user> -d <database>` |
+
+> 💡 **Tip:**  
+> If the issue persists, check the Logstash logs for detailed errors:  
+> ```bash
+> sudo tail -f /var/log/logstash/logstash-plain.log
+> ```  
+> and review `/tmp/logstash-test.log` if a configuration test fails.
