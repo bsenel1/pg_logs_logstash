@@ -22,6 +22,27 @@ sudo systemctl enable --now postgresql-17
 systemctl --no-pager status postgresql-17
 psql --version  # verify client installed (optional)
 ```
+### Step 2 — TimescaleDB Setup  
+To optimize storage and queries for time-series log data, you can enable TimescaleDB.
+
+Install the TimescaleDB package (example for Rocky Linux 9 / PostgreSQL 17):
+
+```bash
+sudo tee /etc/yum.repos.d/timescaledb.repo <<EOF
+[timescaledb]
+name=timescaledb
+baseurl=https://packagecloud.io/timescale/timescaledb/el/9/x86_64
+repo_gpgcheck=1
+enabled=1
+gpgkey=https://packagecloud.io/timescale/timescaledb/gpgkey
+sslverify=1
+sslcacert=/etc/pki/tls/certs/ca-bundle.crt
+metadata_expire=300
+EOF
+```
+```bash
+sudo dnf install -y timescaledb-2-postgresql-17
+```
 ### Step 2 — Configure Logging and pgaudit
 Goal: Enable detailed connection and audit logging in PostgreSQL by adjusting key parameters in `postgresql.conf`.  
 - This step ensures that both standard activity logs and audit trails are captured for Logstash.
@@ -61,7 +82,7 @@ log_line_prefix = '%m [%p] user=%u,db=%d, client_ip=%h app=%a'
 log_truncate_on_rotation = off
 
 # Load pgaudit extension at server startup
-shared_preload_libraries = 'pgaudit'
+shared_preload_libraries = 'pgaudit,timescaledb'
 
 # Enable full audit logging (DDL, DML, etc.)
 pgaudit.log = 'all'
