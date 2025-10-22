@@ -43,7 +43,7 @@ EOF
 ```bash
 sudo dnf install -y timescaledb-2-postgresql-17
 ```
-### Step 2 — Configure Logging and pgaudit
+### Step 2 — Configure PostgreSQL
 Goal: Enable detailed connection and audit logging in PostgreSQL by adjusting key parameters in `postgresql.conf`.  
 - This step ensures that both standard activity logs and audit trails are captured for Logstash.
 ---
