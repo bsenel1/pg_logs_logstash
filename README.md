@@ -81,7 +81,7 @@ log_line_prefix = '%m [%p] user=%u,db=%d, client_ip=%h app=%a'
 # Do not truncate old logs on rotation (keep history)
 log_truncate_on_rotation = off
 
-# Load pgaudit extension at server startup
+# Load pgaudit and timescaledb extensions at server startup
 shared_preload_libraries = 'pgaudit,timescaledb'
 
 # Enable full audit logging (DDL, DML, etc.)
