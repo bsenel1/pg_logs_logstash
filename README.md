@@ -69,11 +69,17 @@ log_disconnections = on
 # Store logs in the internal "log" directory
 log_directory = 'log'
 
-# Use timestamped filenames for each log file
+# Log file name pattern — daily rotation by weekday
 log_filename = 'postgresql-%a.log'
 
 # Capture all SQL statements for analysis
 log_statement = 'all'
+
+# Rotate the log file every 1 day.
+log_rotation_age = 1d
+
+# When rotating, overwrite the existing log file for that weekday.
+log_truncate_on_rotation = on
 
 # Include useful metadata in each log line
 log_line_prefix = '%m [%p] user=%u,db=%d, client_ip=%h app=%a'
@@ -90,7 +96,10 @@ pgaudit.log = 'all'
 # Skip catalog object logging (less noise)
 pgaudit.log_catalog = off
 ```
-
+Then restart PostgreSQL to apply the changes:
+```bash
+sudo systemctl restart postgresql-17
+```
 ### Step 3 — Install and Configure Logstash
 Goal: Install Logstash on the host system, enable it as a service, and prepare the directory structure for pipeline configuration.
 
