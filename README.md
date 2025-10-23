@@ -167,7 +167,7 @@ Follow these steps to install it manually.
 
 ```bash
 # Navigate to the Logstash JDBC library directory
-cd /usr/share/logstash/vendor/jar/jdbc/
+cd /usr/share/logstash/logstash-core/lib/jars/
 
 # Download the official PostgreSQL JDBC driver
 sudo wget https://jdbc.postgresql.org/download/postgresql-42.7.8.jar
