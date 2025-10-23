@@ -9,7 +9,6 @@
   - [Step 1 — Install PostgreSQL (Rocky Linux)](#step-1--install-postgresql-rocky-linux)
   - [Step 2 — TimescaleDB Setup](#step-2--timescaledb-setup)
   - [Step 3 — Configure PostgreSQL](#step-3--configure-postgresql)
-  - [Edit PostgreSQL Configuration](#edit-postgresql-configuration)
   - [Step 4 — Install and Configure Logstash](#step-4--install-and-configure-logstash)
   - [Step 4.1 — Install PostgreSQL JDBC Driver](#step-41--install-postgresql-jdbc-driver)
 - [Usage](#usage)
@@ -61,8 +60,6 @@ sudo dnf install -y timescaledb-2-postgresql-17
 Goal: Enable detailed connection and audit logging in PostgreSQL by adjusting key parameters in `postgresql.conf`.  
 - This step ensures that both standard activity logs and audit trails are captured for Logstash.
 ---
-### Edit PostgreSQL Configuration
-
 Open the main configuration file:
 
 ```bash
