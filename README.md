@@ -3,6 +3,20 @@
 - This repository delivers a host-based pipeline for collecting and analyzing **PostgreSQL logs** with **Logstash**.  
 - It parses **connection** and **audit** events, enriches them with host metadata (`cluster_name`, `server_name`, `server_ip`), and stores structured records in **PostgreSQL / TimescaleDB** for querying and monitoring.  
 - The setup targets **Rocky Linux 9** and assumes direct installation on the host.
+---
+# Table of Contents
+- [Installation](#installation)
+  - [Step 1 — Install PostgreSQL (Rocky Linux)](#step-1--install-postgresql-rocky-linux)
+  - [Step 2 — TimescaleDB Setup](#step-2--timescaledb-setup)
+  - [Step 3 — Configure PostgreSQL](#step-3--configure-postgresql)
+  - [Edit PostgreSQL Configuration](#edit-postgresql-configuration)
+  - [Step 4 — Install and Configure Logstash](#step-4--install-and-configure-logstash)
+  - [Step 4.1 — Install PostgreSQL JDBC Driver](#step-41--install-postgresql-jdbc-driver)
+- [Usage](#usage)
+  - [Run with the Shell Script (Recommended)](#run-with-the-shell-script-recommended)
+- [Verification](#verification)
+- [Troubleshooting](#troubleshooting)
+- [Docker Support](#docker-support)
 
 ---
 ## Installation
@@ -43,7 +57,7 @@ EOF
 ```bash
 sudo dnf install -y timescaledb-2-postgresql-17
 ```
-### Step 2 — Configure PostgreSQL
+### Step 3 — Configure PostgreSQL
 Goal: Enable detailed connection and audit logging in PostgreSQL by adjusting key parameters in `postgresql.conf`.  
 - This step ensures that both standard activity logs and audit trails are captured for Logstash.
 ---
@@ -100,7 +114,7 @@ Then restart PostgreSQL to apply the changes:
 ```bash
 sudo systemctl restart postgresql-17
 ```
-### Step 3 — Install and Configure Logstash
+### Step 4 — Install and Configure Logstash
 Goal: Install Logstash on the host system, enable it as a service, and prepare the directory structure for pipeline configuration.
 
 ---
@@ -144,7 +158,7 @@ sudo dnf install logstash -y
 # Enable Logstash to start automatically at boot
 sudo systemctl enable logstash
 ```
-### Step 3.1 — Install PostgreSQL JDBC Driver
+### Step 4.1 — Install PostgreSQL JDBC Driver
 
 Goal: Allow Logstash to connect to PostgreSQL using the JDBC output plugin.
 
@@ -246,7 +260,7 @@ along with their possible causes and recommended solutions.
 > and review `/tmp/logstash-test.log` if a configuration test fails.
 ---
 
-## 🐳 Docker Support
+## Docker Support
 
 If you prefer to run this setup inside a containerized environment,  
 see [Docker README (docker branch)](https://github.com/bsenel1/postgres-logstash/blob/docker/README.md) for Docker Compose examples  
