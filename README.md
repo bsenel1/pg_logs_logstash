@@ -9,7 +9,7 @@ It includes a preconfigured setup with **PostgreSQL 17 + TimescaleDB** and **Log
 
 ### Clone and switch to this branch
 ```bash
-git clone https://github.com/bsenel1/postgres-logstash.git
+git clone https://github.com/bsenel1/pg_logs_logstash.git
 cd postgres-logstash
 git checkout docker
 ```
