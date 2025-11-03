@@ -247,6 +247,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     id SERIAL PRIMARY KEY,
     log_time TIMESTAMPTZ NOT NULL,
     username TEXT,
+    database_name TEXT,
     session_id TEXT,
     statement_id TEXT,
     audit_type TEXT,
@@ -516,8 +517,8 @@ output {
       username          => "PG_USER_PLACEHOLDER"
       password          => "PG_PASSWORD_PLACEHOLDER"
       statement => [
-        "INSERT INTO audit_logs (log_time, username, session_id, statement_id, audit_type, statement_text, command, object_type, object_name, cluster_name, server_name, server_ip, client_ip, application_name) VALUES (?::timestamptz, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        "log_time", "username", "session_id", "statement_id", "audit_type", "statement_text", "command", "object_type", "object_name", "cluster_name", "server_name", "server_ip", "client_ip", "application_name"
+        "INSERT INTO audit_logs (log_time, username, database_name, session_id, statement_id, audit_type, statement_text, command, object_type, object_name, cluster_name, server_name, server_ip, client_ip, application_name) VALUES (?::timestamptz, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "log_time", "username", "database_name","session_id", "statement_id", "audit_type", "statement_text", "command", "object_type", "object_name", "cluster_name", "server_name", "server_ip", "client_ip", "application_name"
       ]
       flush_size    => 1
       max_pool_size => 5
