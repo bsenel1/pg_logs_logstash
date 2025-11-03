@@ -247,6 +247,7 @@ CREATE TABLE IF NOT EXISTS audit_logs (
     id SERIAL PRIMARY KEY,
     log_time TIMESTAMPTZ NOT NULL,
     username TEXT,
+    database_name TEXT,
     session_id TEXT,
     statement_id TEXT,
     audit_type TEXT,
